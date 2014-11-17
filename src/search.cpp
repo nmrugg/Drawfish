@@ -900,7 +900,8 @@ moves_loop: // When in check and at SpNode search starts from here
           {
               rm.score = value;
               rm.pv.resize(1);
-              for (int i = 0; (ss+1)->pv && (ss+1)->pv[i] != MOVE_NONE; ++i)
+
+              for (int i = 0; (ss+1)->pv[i] != MOVE_NONE; ++i)
                   rm.pv.push_back((ss+1)->pv[i]);
 
               // We record how often the best move has been changed in each
@@ -924,15 +925,17 @@ moves_loop: // When in check and at SpNode search starts from here
           {
               bestMove = SpNode ? splitPoint->bestMove = move : move;
 
-              if (PvNode && !RootNode)
-              {
-                  update_pv(ss->pv, move, (ss+1)->pv);
-                  if (SpNode)
-                      update_pv(splitPoint->ss->pv, move, (ss+1)->pv);
-              }
-
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
+              {
                   alpha = SpNode ? splitPoint->alpha = value : value;
+
+                  if (!RootNode)
+                  {
+                      update_pv(ss->pv, move, (ss+1)->pv);
+                      if (SpNode)
+                          update_pv(splitPoint->ss->pv, move, (ss+1)->pv);
+                  }
+              }
               else
               {
                   assert(value >= beta); // Fail high
@@ -1242,7 +1245,7 @@ moves_loop: // When in check and at SpNode search starts from here
 
   void update_pv(Move* pv, Move move, Move* child) {
 
-    for (*pv++ = move; child && *child != MOVE_NONE; )
+    for (*pv++ = move; *child != MOVE_NONE; )
         *pv++ = *child++;
     *pv = MOVE_NONE;
   }
