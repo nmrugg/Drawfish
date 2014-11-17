@@ -87,7 +87,7 @@ namespace {
   void id_loop(Position& pos);
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
-  void update_pv(Move* pv, Move move, Move* child);
+  void copy(Move* dst, Move* src);
   void update_stats(const Position& pos, Stack* ss, Move move, Depth depth, Move* quiets, int quietsCnt);
   string uci_pv(const Position& pos, Depth depth, Value alpha, Value beta);
 
@@ -903,8 +903,8 @@ moves_loop: // When in check and at SpNode search starts from here
               rm.score = value;
               rm.pv.resize(1);
 
-              for (int i = 0; (ss+1)->pv[i] != MOVE_NONE; ++i)
-                  rm.pv.push_back((ss+1)->pv[i]);
+              for (Move* m = (ss+1)->pv; *m != MOVE_NONE; ++m)
+                  rm.pv.push_back(*m);
 
               // We record how often the best move has been changed in each
               // iteration. This information is used for time management: When
@@ -929,12 +929,12 @@ moves_loop: // When in check and at SpNode search starts from here
 
               if (PvNode && value < beta) // Update alpha! Always alpha < beta
               {
-                  alpha = SpNode ? splitPoint->alpha = value : value;
+                  alpha   = SpNode ?  splitPoint->alpha = value : value;
+                  *ss->pv = SpNode ? *splitPoint->ss->pv = move : move;
 
-                  update_pv(ss->pv, move, (ss+1)->pv);
+                  copy(ss->pv+1, (ss+1)->pv);
                   if (SpNode)
-                      update_pv(splitPoint->ss->pv, move, (ss+1)->pv);
-
+                      copy(splitPoint->ss->pv+1, (ss+1)->pv);
               }
               else
               {
@@ -1182,13 +1182,11 @@ moves_loop: // When in check and at SpNode search starts from here
 
           if (value > alpha)
           {
-              if (PvNode)
-                  update_pv(ss->pv, move, (ss+1)->pv);
-
               if (PvNode && value < beta) // Update alpha here! Always alpha < beta
               {
                   alpha = value;
-                  bestMove = move;
+                  bestMove = *ss->pv = move;
+                  copy(ss->pv+1, (ss+1)->pv);
               }
               else // Fail high
               {
@@ -1241,13 +1239,13 @@ moves_loop: // When in check and at SpNode search starts from here
   }
 
 
-  // update_pv() copies child node pv[] adding current move
+  // copy() copies src into dst until MOVE_NONE included
 
-  void update_pv(Move* pv, Move move, Move* child) {
+  void copy(Move* dst, Move* src) {
 
-    for (*pv++ = move; *child != MOVE_NONE; )
-        *pv++ = *child++;
-    *pv = MOVE_NONE;
+    do
+        *dst++ = *src;
+    while (*src++ != MOVE_NONE);
   }
 
   // update_stats() updates killers, history, countermoves and followupmoves stats after a fail-high
