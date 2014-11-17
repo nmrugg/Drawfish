@@ -231,12 +231,14 @@ namespace {
 
   void id_loop(Position& pos) {
 
+    Move pv[MAX_PLY+1];
     Stack stack[MAX_PLY+4], *ss = stack+2; // To allow referencing (ss-2) and (ss+2)
     Depth depth;
     Value bestValue, alpha, beta, delta;
 
     std::memset(ss-2, 0, 5 * sizeof(Stack));
 
+    ss->pv = pv;
     depth = DEPTH_ZERO;
     BestMoveChanges = 0;
     bestValue = delta = alpha = -VALUE_INFINITE;
@@ -929,12 +931,10 @@ moves_loop: // When in check and at SpNode search starts from here
               {
                   alpha = SpNode ? splitPoint->alpha = value : value;
 
-                  if (!RootNode)
-                  {
-                      update_pv(ss->pv, move, (ss+1)->pv);
-                      if (SpNode)
-                          update_pv(splitPoint->ss->pv, move, (ss+1)->pv);
-                  }
+                  update_pv(ss->pv, move, (ss+1)->pv);
+                  if (SpNode)
+                      update_pv(splitPoint->ss->pv, move, (ss+1)->pv);
+
               }
               else
               {
