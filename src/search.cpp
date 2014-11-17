@@ -110,6 +110,31 @@ namespace {
     Move best;
   };
 
+  void check_eval(const RootMove& rm, Position& pos) {
+    if (rm.score == 0)
+      return;
+
+    std::string foo = pos.fen();
+    StateInfo state[MAX_PLY+6], *st = state;
+    int idx = 0;
+
+    for (; idx < int(rm.pv.size()); ++idx) {
+        pos.do_move(rm.pv[idx], *st++);
+    }
+
+    if (abs(rm.score) != abs(evaluate(pos))) {
+      for (int j = 0; j <  int(rm.pv.size()); ++j)
+           std::cout << " " << UCI::format_move(rm.pv[j], false);
+      std::cout << std::endl << foo << std::endl << pos.fen();
+      std::cout << std::endl << "Eval mismatch: " << rm.score << " " <<  evaluate(pos) << std::endl;
+      exit(1);
+    }
+    else
+        std::cerr << "Success!!: " << rm.score << " " <<  evaluate(pos) << std::endl;
+
+    while (idx) pos.undo_move(rm.pv[--idx]);
+  }
+
 } // namespace
 
 
@@ -344,6 +369,9 @@ namespace {
             else if (   PVIdx + 1 == std::min(multiPV, RootMoves.size())
                      || Time::now() - SearchTime > 3000)
                 sync_cout << uci_pv(pos, depth, alpha, beta) << sync_endl;
+
+            if (!Signals.stop)
+                check_eval(RootMoves[0], RootPos);
         }
 
         // If skill levels are enabled and time is up, pick a sub-optimal best move
@@ -1082,10 +1110,10 @@ moves_loop: // When in check and at SpNode search starts from here
             if ((ss->staticEval = bestValue = tte->eval_value()) == VALUE_NONE)
                 ss->staticEval = bestValue = evaluate(pos);
 
-            // Can ttValue be used as a better position evaluation?
-            if (ttValue != VALUE_NONE)
-                if (tte->bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER))
-                    bestValue = ttValue;
+//            // Can ttValue be used as a better position evaluation?
+//            if (ttValue != VALUE_NONE)
+//                if (tte->bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER))
+//                    bestValue = ttValue;
         }
         else
             ss->staticEval = bestValue =
