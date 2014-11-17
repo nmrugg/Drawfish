@@ -661,6 +661,12 @@ moves_loop: // When in check and at SpNode search starts from here
                            && (tte->bound() & BOUND_LOWER)
                            &&  tte->depth() >= depth - 3 * ONE_PLY;
 
+    if (PvNode)
+    {
+        (ss+1)->pv = pv;
+        ss->pv[0] = MOVE_NONE;
+    }
+
     // Step 11. Loop through moves
     // Loop through all pseudo-legal moves until no moves remain or a beta cutoff occurs
     while ((move = mp.next_move<SpNode>()) != MOVE_NONE)
@@ -697,9 +703,6 @@ moves_loop: // When in check and at SpNode search starts from here
                         << " currmove " << UCI::format_move(move, pos.is_chess960())
                         << " currmovenumber " << moveCount + PVIdx << sync_endl;
       }
-
-      if (PvNode)
-          (ss+1)->pv = NULL;
 
       ext = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
@@ -867,7 +870,6 @@ moves_loop: // When in check and at SpNode search starts from here
       if (PvNode && (moveCount == 1 || (value > alpha && (RootNode || value < beta))))
       {
           pv[0] = MOVE_NONE;
-          (ss+1)->pv = pv;
           value = newDepth <   ONE_PLY ?
                             givesCheck ? -qsearch<PV,  true>(pos, ss+1, -beta, -alpha, DEPTH_ZERO)
                                        : -qsearch<PV, false>(pos, ss+1, -beta, -alpha, DEPTH_ZERO)
