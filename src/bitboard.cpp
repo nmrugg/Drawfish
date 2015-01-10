@@ -2,7 +2,6 @@
 #include <cstring>   // For std::memset
 
 #include "bitboard.h"
-#include "bitcount.h"
 //#include "misc.h"
 
 Bitboard FileBB[FILE_NB];
