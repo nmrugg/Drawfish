@@ -34,7 +34,7 @@ BINDIR = $(PREFIX)/bin
 PGOBENCH = ./$(EXE) bench 16 1 1 default time
 
 ### Object files
-OBJS = bitboard.o
+OBJS = test.o
 
 ### ==========================================================================
 ### Section 2. High-level Configuration
