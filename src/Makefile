@@ -1,5 +1,4 @@
-CXXFLAGS += -O3
-CXXFLAGS += -flto
+CXXFLAGS += -O3 -flto
 LDFLAGS += $(CXXFLAGS)
 
 test: test.o
