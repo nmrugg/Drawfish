@@ -1,5 +1,2 @@
 #include "bitboard.h"
-
-int main() {
-  Bitboards::init();
-}
+int main() { Bitboards::init(); }
