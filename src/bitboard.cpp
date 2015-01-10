@@ -1,15 +1,9 @@
-#include <algorithm>
-#include <cstring>   // For std::memset
-
 #include "bitboard.h"
-//#include "misc.h"
 
 Bitboard FileBB[FILE_NB];
 Bitboard RankBB[RANK_NB];
 Bitboard AdjacentFilesBB[FILE_NB];
 Bitboard InFrontBB[COLOR_NB][RANK_NB];
-Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
-Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 Bitboard ForwardBB[COLOR_NB][SQUARE_NB];
 Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
 Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
