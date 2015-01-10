@@ -271,9 +271,6 @@ namespace {
             occupancy[size] = b;
             reference[size] = sliding_attack(deltas, s, b);
 
-            if (HasPext)
-                attacks[s][_pext_u64(b, masks[s])] = reference[size];
-
             size++;
             b = (b - masks[s]) & masks[s];
         } while (b);
@@ -283,9 +280,6 @@ namespace {
         if (s < SQ_H8)
             attacks[s + 1] = attacks[s] + size;
 
-        if (HasPext)
-            continue;
-        
         // Find a magic for square 's' picking up an (almost) random number
         // until we find the one that passes the verification test.
         do {

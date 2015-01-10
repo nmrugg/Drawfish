@@ -1,39 +1,5 @@
-/*
-  Stockfish, a UCI chess playing engine derived from Glaurung 2.1
-  Copyright (C) 2004-2008 Tord Romstad (Glaurung author)
-  Copyright (C) 2008-2014 Marco Costalba, Joona Kiiski, Tord Romstad
-
-  Stockfish is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Stockfish is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #ifndef TYPES_H_INCLUDED
 #define TYPES_H_INCLUDED
-
-/// For Linux and OSX configuration is done automatically using Makefile. To get
-/// started type 'make help'.
-///
-/// For Windows, part of the configuration is detected automatically, but some
-/// switches need to be set manually:
-///
-/// -DNDEBUG      | Disable debugging mode. Always use this.
-///
-/// -DNO_PREFETCH | Disable use of prefetch asm-instruction. A must if you want
-///               | the executable to run on some very old machines.
-///
-/// -DUSE_POPCNT  | Add runtime support for use of popcnt asm-instruction. Works
-///               | only in 64-bit mode. For compiling requires hardware with
-///               | popcnt support.
 
 #include <cassert>
 #include <cctype>
@@ -41,28 +7,9 @@
 #include <cstdlib>
 
 #include <inttypes.h>
+const bool HasPopCnt = true;
 
 #define unlikely(x) (x) // For code annotation purposes
-
-#if defined(_WIN64) && !defined(IS_64BIT)
-#  include <intrin.h> // MSVC popcnt and bsfq instrinsics
-#  define IS_64BIT
-#  define USE_BSFQ
-#endif
-
-#if defined(USE_POPCNT) && defined(_MSC_VER) && defined(__INTEL_COMPILER)
-#  include <nmmintrin.h> // Intel header for _mm_popcnt_u64() intrinsic
-#endif
-
-#if defined(USE_PEXT)
-#  include <immintrin.h> // Header for _pext_u64() intrinsic
-#else
-#  define _pext_u64(b, m) (0)
-#endif
-
-#  if !defined(NO_PREFETCH) && (defined(__INTEL_COMPILER) || defined(_MSC_VER))
-#   include <xmmintrin.h> // Intel and Microsoft header for _mm_prefetch()
-#  endif
 
 #define CACHE_LINE_SIZE 64
 
@@ -72,18 +19,6 @@
 #  define FORCE_INLINE  inline __attribute__((always_inline))
 #else
 #  define FORCE_INLINE  inline
-#endif
-
-#ifdef USE_POPCNT
-const bool HasPopCnt = true;
-#else
-const bool HasPopCnt = false;
-#endif
-
-#ifdef USE_PEXT
-const bool HasPext = true;
-#else
-const bool HasPext = false;
 #endif
 
 #ifdef IS_64BIT
