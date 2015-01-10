@@ -22,17 +22,4 @@
 
 #include <inttypes.h>
 
-#ifndef _WIN32 // Linux - Unix
-
-#  include <sys/time.h>
-
-inline int64_t system_time_to_msec() {
-  timeval t;
-  gettimeofday(&t, NULL);
-  return t.tv_sec * 1000LL + t.tv_usec / 1000;
-}
-
-#else // Windows and MinGW
-#endif
-
 #endif // #ifndef PLATFORM_H_INCLUDED

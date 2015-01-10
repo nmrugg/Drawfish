@@ -36,13 +36,6 @@ void dbg_hit_on_c(bool c, bool b);
 void dbg_mean_of(int v);
 void dbg_print();
 
-
-namespace Time {
-  typedef int64_t point;
-  inline point now() { return system_time_to_msec(); }
-}
-
-
 template<class Entry, int Size>
 struct HashTable {
   HashTable() : table(Size, Entry()) {}
