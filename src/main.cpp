@@ -1,2 +1,2 @@
-namespace Bitboards { void init(); }
-int main() { Bitboards::init(); }
+extern void init(); 
+int main() { init(); }
