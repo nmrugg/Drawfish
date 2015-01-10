@@ -2,7 +2,7 @@ int A[8];
 int B[8];
 int C;
 
-void init() {
+int main() {
 
   for (int f = 0; f <= 7; ++f)
       A[f] = f;
