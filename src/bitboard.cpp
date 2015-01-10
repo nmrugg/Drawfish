@@ -24,6 +24,6 @@ void Bitboards::init() {
       InFrontBB[WHITE][r] = ~(InFrontBB[BLACK][r + 1] = InFrontBB[BLACK][r] | RankBB[r]);
 
 
-  PawnAttackSpan[0][0] = InFrontBB[0][0] & AdjacentFilesBB[7];
+  PawnAttackSpan[0][0] = AdjacentFilesBB[7];
 }
 
