@@ -44,37 +44,6 @@ extern Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
 extern Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 
-
-/// Overloads of bitwise operators between a Bitboard and a Square for testing
-/// whether a given bit is set in a bitboard, and for setting and clearing bits.
-
-inline bool more_than_one(Bitboard b) {
-  return b & (b - 1);
-}
-
-
-/// rank_bb() and file_bb() return a bitboard representing all the squares on
-/// the given file or rank.
-
-inline Bitboard rank_bb(Rank r) {
-  return RankBB[r];
-}
-
-inline Bitboard rank_bb(Square s) {
-  return RankBB[rank_of(s)];
-}
-
-inline Bitboard file_bb(File f) {
-  return FileBB[f];
-}
-
-inline Bitboard file_bb(Square s) {
-  return FileBB[file_of(s)];
-}
-
-/// adjacent_files_bb() returns a bitboard representing all the squares on the
-/// adjacent files of the given one.
-
 inline Bitboard adjacent_files_bb(File f) {
   return AdjacentFilesBB[f];
 }
