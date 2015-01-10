@@ -29,20 +29,7 @@ const Bitboard Rank6BB = Rank1BB << (8 * 5);
 const Bitboard Rank7BB = Rank1BB << (8 * 6);
 const Bitboard Rank8BB = Rank1BB << (8 * 7);
 
-extern int SquareDistance[SQUARE_NB][SQUARE_NB];
-
-extern Bitboard FileBB[FILE_NB];
-extern Bitboard RankBB[RANK_NB];
 extern Bitboard AdjacentFilesBB[FILE_NB];
-extern Bitboard InFrontBB[COLOR_NB][RANK_NB];
-extern Bitboard StepAttacksBB[PIECE_NB][SQUARE_NB];
-extern Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
-extern Bitboard LineBB[SQUARE_NB][SQUARE_NB];
-extern Bitboard DistanceRingBB[SQUARE_NB][8];
-extern Bitboard ForwardBB[COLOR_NB][SQUARE_NB];
-extern Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
-extern Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
-extern Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 
 inline Bitboard adjacent_files_bb(File f) {
   return AdjacentFilesBB[f];
