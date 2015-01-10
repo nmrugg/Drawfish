@@ -1,4 +1,3 @@
-CXXFLAGS += -Wall -Wcast-qual -fno-exceptions -fno-rtti
 CXXFLAGS += -O3
 CXXFLAGS += -flto
 LDFLAGS += $(CXXFLAGS)
