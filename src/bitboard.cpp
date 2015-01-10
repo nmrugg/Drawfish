@@ -23,10 +23,7 @@ void Bitboards::init() {
   for (Rank r = RANK_1; r < RANK_8; ++r)
       InFrontBB[WHITE][r] = ~(InFrontBB[BLACK][r + 1] = InFrontBB[BLACK][r] | RankBB[r]);
 
-  for (Color c = WHITE; c <= BLACK; ++c)
-      for (Square s = SQ_A1; s <= SQ_H8; ++s)
-      {
-          PawnAttackSpan[c][s] = InFrontBB[c][rank_of(s)] & AdjacentFilesBB[file_of(s)];
-      }
+
+  PawnAttackSpan[0][0] = InFrontBB[0][0] & AdjacentFilesBB[7];
 }
 
