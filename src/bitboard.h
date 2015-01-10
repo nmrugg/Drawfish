@@ -244,7 +244,7 @@ inline unsigned magic_index(Square s, Bitboard occupied) {
 
 template<PieceType Pt>
 inline Bitboard attacks_bb(Square s, Bitboard occupied) {
-  return (Pt == ROOK ? RookAttacks : BishopAttacks)[s][magic_index<Pt>(s, occupied)];
+  return 0ULL;
 }
 
 inline Bitboard attacks_bb(Piece pc, Square s, Bitboard occupied) {
