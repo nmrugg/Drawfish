@@ -1,9 +1,7 @@
 #include "bitboard.h"
 
 Bitboard FileBB[FILE_NB];
-Bitboard RankBB[RANK_NB];
 Bitboard AdjacentFilesBB[FILE_NB];
-Bitboard InFrontBB[COLOR_NB][RANK_NB];
 Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 
 /// Bitboards::init() initializes various bitboard tables. It is called at

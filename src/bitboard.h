@@ -27,10 +27,6 @@ enum File {
   FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NB
 };
 
-enum Rank {
-  RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NB
-};
-
 #define ENABLE_BASE_OPERATORS_ON(T)                             \
 inline T operator+(T d1, T d2) { return T(int(d1) + int(d2)); } \
 inline T operator-(T d1, T d2) { return T(int(d1) - int(d2)); } \
@@ -52,14 +48,9 @@ inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 ENABLE_FULL_OPERATORS_ON(Color)
 ENABLE_FULL_OPERATORS_ON(Square)
 ENABLE_FULL_OPERATORS_ON(File)
-ENABLE_FULL_OPERATORS_ON(Rank)
 
 inline File file_of(Square s) {
   return File(s & 7);
-}
-
-inline Rank rank_of(Square s) {
-  return Rank(s >> 3);
 }
 
 namespace Bitboards { void init(); }
