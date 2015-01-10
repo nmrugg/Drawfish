@@ -20,86 +20,6 @@ Bitboard ForwardBB[COLOR_NB][SQUARE_NB];
 Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
 Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 
-namespace {
-
-  // De Bruijn sequences. See chessprogramming.wikispaces.com/BitScan
-  const uint64_t DeBruijn64 = 0x3F79D71B4CB0A89ULL;
-  const uint32_t DeBruijn32 = 0x783A9B23;
-
-  int MS1BTable[256];           // To implement software msb()
-  Square BSFTable[SQUARE_NB];   // To implement software bitscan
-
-  typedef unsigned (Fn)(Square, Bitboard);
-
-
-  // bsf_index() returns the index into BSFTable[] to look up the bitscan. Uses
-  // Matt Taylor's folding for 32 bit case, extended to 64 bit by Kim Walisch.
-
-  inline unsigned bsf_index(Bitboard b) {
-    b ^= b - 1;
-    return Is64Bit ? (b * DeBruijn64) >> 58
-                   : ((unsigned(b) ^ unsigned(b >> 32)) * DeBruijn32) >> 26;
-  }
-}
-
-#ifndef USE_BSFQ
-
-/// Software fall-back of lsb() and msb() for CPU lacking hardware support
-
-Square lsb(Bitboard b) {
-  return BSFTable[bsf_index(b)];
-}
-
-Square msb(Bitboard b) {
-
-  unsigned b32;
-  int result = 0;
-
-  if (b > 0xFFFFFFFF)
-  {
-      b >>= 32;
-      result = 32;
-  }
-
-  b32 = unsigned(b);
-
-  if (b32 > 0xFFFF)
-  {
-      b32 >>= 16;
-      result += 16;
-  }
-
-  if (b32 > 0xFF)
-  {
-      b32 >>= 8;
-      result += 8;
-  }
-
-  return Square(result + MS1BTable[b32]);
-}
-
-#endif // ifndef USE_BSFQ
-
-
-/// Bitboards::pretty() returns an ASCII representation of a bitboard suitable
-/// to be printed to standard output. Useful for debugging.
-
-const std::string Bitboards::pretty(Bitboard b) {
-
-  std::string s = "+---+---+---+---+---+---+---+---+\n";
-
-  for (Rank r = RANK_8; r >= RANK_1; --r)
-  {
-      for (File f = FILE_A; f <= FILE_H; ++f)
-          s.append(b & make_square(f, r) ? "| X " : "|   ");
-
-      s.append("|\n+---+---+---+---+---+---+---+---+\n");
-  }
-
-  return s;
-}
-
-
 /// Bitboards::init() initializes various bitboard tables. It is called at
 /// startup and relies on global objects to be already zero-initialized.
 
@@ -108,11 +28,7 @@ void Bitboards::init() {
   for (Square s = SQ_A1; s <= SQ_H8; ++s)
   {
       SquareBB[s] = 1ULL << s;
-      BSFTable[bsf_index(SquareBB[s])] = s;
   }
-
-  for (Bitboard b = 1; b < 256; ++b)
-      MS1BTable[b] = more_than_one(b) ? MS1BTable[b - 1] : lsb(b);
 
   for (File f = FILE_A; f <= FILE_H; ++f)
       FileBB[f] = f > FILE_A ? FileBB[f - 1] << 1 : FileABB;
