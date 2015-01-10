@@ -4,4 +4,4 @@ CXXFLAGS += -flto
 LDFLAGS += $(CXXFLAGS)
 
 test: test.o
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+	$(CXX) -o $@ test.o $(LDFLAGS)
