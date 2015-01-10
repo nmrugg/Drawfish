@@ -40,7 +40,7 @@
 #include <climits>
 #include <cstdlib>
 
-#include "platform.h"
+#include <inttypes.h>
 
 #define unlikely(x) (x) // For code annotation purposes
 
