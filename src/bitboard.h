@@ -5,21 +5,11 @@
 
 #include "types.h"
 
-namespace Bitbases {
-
-void init();
-bool probe(Square wksq, Square wpsq, Square bksq, Color us);
-
-}
-
 namespace Bitboards {
 
 void init();
-const std::string pretty(Bitboard b);
 
 }
-
-const Bitboard DarkSquares = 0xAA55AA55AA55AA55ULL;
 
 const Bitboard FileABB = 0x0101010101010101ULL;
 const Bitboard FileBBB = FileABB << 1;
@@ -40,16 +30,6 @@ const Bitboard Rank7BB = Rank1BB << (8 * 6);
 const Bitboard Rank8BB = Rank1BB << (8 * 7);
 
 extern int SquareDistance[SQUARE_NB][SQUARE_NB];
-
-extern Bitboard  RookMasks  [SQUARE_NB];
-extern Bitboard  RookMagics [SQUARE_NB];
-extern Bitboard* RookAttacks[SQUARE_NB];
-extern unsigned  RookShifts [SQUARE_NB];
-
-extern Bitboard  BishopMasks  [SQUARE_NB];
-extern Bitboard  BishopMagics [SQUARE_NB];
-extern Bitboard* BishopAttacks[SQUARE_NB];
-extern unsigned  BishopShifts [SQUARE_NB];
 
 extern Bitboard FileBB[FILE_NB];
 extern Bitboard RankBB[RANK_NB];
@@ -92,169 +72,11 @@ inline Bitboard file_bb(Square s) {
   return FileBB[file_of(s)];
 }
 
-
-/// shift_bb() moves a bitboard one step along direction Delta. Mainly for pawns
-
-template<Square Delta>
-inline Bitboard shift_bb(Bitboard b) {
-  return  Delta == DELTA_N  ?  b             << 8 : Delta == DELTA_S  ?  b             >> 8
-        : Delta == DELTA_NE ? (b & ~FileHBB) << 9 : Delta == DELTA_SE ? (b & ~FileHBB) >> 7
-        : Delta == DELTA_NW ? (b & ~FileABB) << 7 : Delta == DELTA_SW ? (b & ~FileABB) >> 9
-        : 0;
-}
-
-
 /// adjacent_files_bb() returns a bitboard representing all the squares on the
 /// adjacent files of the given one.
 
 inline Bitboard adjacent_files_bb(File f) {
   return AdjacentFilesBB[f];
 }
-
-
-/// between_bb() returns a bitboard representing all the squares between the two
-/// given ones. For instance, between_bb(SQ_C4, SQ_F7) returns a bitboard with
-/// the bits for square d5 and e6 set. If s1 and s2 are not on the same rank, file
-/// or diagonal, 0 is returned.
-
-inline Bitboard between_bb(Square s1, Square s2) {
-  return BetweenBB[s1][s2];
-}
-
-
-/// in_front_bb() returns a bitboard representing all the squares on all the ranks
-/// in front of the given one, from the point of view of the given color. For
-/// instance, in_front_bb(BLACK, RANK_3) will return the squares on ranks 1 and 2.
-
-inline Bitboard in_front_bb(Color c, Rank r) {
-  return InFrontBB[c][r];
-}
-
-
-/// forward_bb() returns a bitboard representing all the squares along the line
-/// in front of the given one, from the point of view of the given color:
-///        ForwardBB[c][s] = in_front_bb(c, s) & file_bb(s)
-
-inline Bitboard forward_bb(Color c, Square s) {
-  return ForwardBB[c][s];
-}
-
-
-/// pawn_attack_span() returns a bitboard representing all the squares that can be
-/// attacked by a pawn of the given color when it moves along its file, starting
-/// from the given square:
-///       PawnAttackSpan[c][s] = in_front_bb(c, s) & adjacent_files_bb(s);
-
-inline Bitboard pawn_attack_span(Color c, Square s) {
-  return PawnAttackSpan[c][s];
-}
-
-
-/// passed_pawn_mask() returns a bitboard mask which can be used to test if a
-/// pawn of the given color and on the given square is a passed pawn:
-///       PassedPawnMask[c][s] = pawn_attack_span(c, s) | forward_bb(c, s)
-
-inline Bitboard passed_pawn_mask(Color c, Square s) {
-  return PassedPawnMask[c][s];
-}
-
-
-/// squares_of_color() returns a bitboard representing all the squares of the
-/// same color of the given one.
-
-inline Bitboard squares_of_color(Square s) {
-  return DarkSquares & s ? DarkSquares : ~DarkSquares;
-}
-
-
-/// aligned() returns true if the squares s1, s2 and s3 are aligned either on a
-/// straight or on a diagonal line.
-
-inline bool aligned(Square s1, Square s2, Square s3) {
-  return LineBB[s1][s2] & s3;
-}
-
-
-/// distance() functions return the distance between x and y, defined as the
-/// number of steps for a king in x to reach y. Works with squares, ranks, files.
-
-template<typename T> inline int distance(T x, T y) { return x < y ? y - x : x - y; }
-template<> inline int distance<Square>(Square x, Square y) { return SquareDistance[x][y]; }
-
-template<typename T1, typename T2> inline int distance(T2 x, T2 y);
-template<> inline int distance<File>(Square x, Square y) { return distance(file_of(x), file_of(y)); }
-template<> inline int distance<Rank>(Square x, Square y) { return distance(rank_of(x), rank_of(y)); }
-
-/// lsb() and msb() return the least/most significant bit in a non-zero bitboard
-
-#ifdef USE_BSFQ
-
-#  if defined(_MSC_VER) && !defined(__INTEL_COMPILER)
-
-inline Square lsb(Bitboard b) {
-  unsigned long idx;
-  _BitScanForward64(&idx, b);
-  return (Square) idx;
-}
-
-inline Square msb(Bitboard b) {
-  unsigned long idx;
-  _BitScanReverse64(&idx, b);
-  return (Square) idx;
-}
-
-#  elif defined(__arm__)
-
-inline int lsb32(uint32_t v) {
-  __asm__("rbit %0, %1" : "=r"(v) : "r"(v));
-  return __builtin_clz(v);
-}
-
-inline Square msb(Bitboard b) {
-  return (Square) (63 - __builtin_clzll(b));
-}
-
-inline Square lsb(Bitboard b) {
-  return (Square) (uint32_t(b) ? lsb32(uint32_t(b)) : 32 + lsb32(uint32_t(b >> 32)));
-}
-
-#  else // Assumed gcc or compatible compiler
-
-inline Square lsb(Bitboard b) { // Assembly code by Heinz van Saanen
-  Bitboard idx;
-  __asm__("bsfq %1, %0": "=r"(idx): "rm"(b) );
-  return (Square) idx;
-}
-
-inline Square msb(Bitboard b) {
-  Bitboard idx;
-  __asm__("bsrq %1, %0": "=r"(idx): "rm"(b) );
-  return (Square) idx;
-}
-
-#  endif
-
-#else // ifdef(USE_BSFQ)
-
-Square lsb(Bitboard b);
-Square msb(Bitboard b);
-
-#endif
-
-
-/// pop_lsb() finds and clears the least significant bit in a non-zero bitboard
-
-inline Square pop_lsb(Bitboard* b) {
-  const Square s = lsb(*b);
-  *b &= *b - 1;
-  return s;
-}
-
-
-/// frontmost_sq() and backmost_sq() return the square corresponding to the
-/// most/least advanced bit relative to the given color.
-
-inline Square frontmost_sq(Color c, Bitboard b) { return c == WHITE ? msb(b) : lsb(b); }
-inline Square  backmost_sq(Color c, Bitboard b) { return c == WHITE ? lsb(b) : msb(b); }
 
 #endif // #ifndef BITBOARD_H_INCLUDED
