@@ -11,7 +11,6 @@ Bitboard FileBB[FILE_NB];
 Bitboard RankBB[RANK_NB];
 Bitboard AdjacentFilesBB[FILE_NB];
 Bitboard InFrontBB[COLOR_NB][RANK_NB];
-Bitboard StepAttacksBB[PIECE_NB][SQUARE_NB];
 Bitboard BetweenBB[SQUARE_NB][SQUARE_NB];
 Bitboard LineBB[SQUARE_NB][SQUARE_NB];
 Bitboard DistanceRingBB[SQUARE_NB][8];
@@ -51,19 +50,5 @@ void Bitboards::init() {
               SquareDistance[s1][s2] = std::max(distance<File>(s1, s2), distance<Rank>(s1, s2));
               DistanceRingBB[s1][SquareDistance[s1][s2] - 1] |= s2;
           }
-
-  int steps[][9] = { {}, { 7, 9 }, { 17, 15, 10, 6, -6, -10, -15, -17 },
-                     {}, {}, {}, { 9, 7, -7, -9, 8, 1, -1, -8 } };
-
-  for (Color c = WHITE; c <= BLACK; ++c)
-      for (PieceType pt = PAWN; pt <= KING; ++pt)
-          for (Square s = SQ_A1; s <= SQ_H8; ++s)
-              for (int i = 0; steps[pt][i]; ++i)
-              {
-                  Square to = s + Square(c == WHITE ? steps[pt][i] : -steps[pt][i]);
-
-                  if (is_ok(to) && distance(s, to) < 3)
-                      StepAttacksBB[make_piece(c, pt)][s] |= to;
-              }
 }
 
