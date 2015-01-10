@@ -22,7 +22,7 @@
 
 #include "bitboard.h"
 #include "bitcount.h"
-#include "misc.h"
+//#include "misc.h"
 
 int SquareDistance[SQUARE_NB][SQUARE_NB];
 
@@ -245,9 +245,6 @@ namespace {
   void init_magics(Bitboard table[], Bitboard* attacks[], Bitboard magics[],
                    Bitboard masks[], unsigned shifts[], Square deltas[], Fn index) {
 
-    int seeds[][RANK_NB] = { { 8977, 44560, 54343, 38998,  5731, 95205, 104912, 17020 },
-                             {  728, 10316, 55013, 32803, 12281, 15100,  16645,   255 } };
-
     Bitboard occupancy[4096], reference[4096], edges, b;
     int i, size;
 
@@ -288,14 +285,12 @@ namespace {
 
         if (HasPext)
             continue;
-
-        PRNG rng(seeds[Is64Bit][rank_of(s)]);
-
+        
         // Find a magic for square 's' picking up an (almost) random number
         // until we find the one that passes the verification test.
         do {
             do
-                magics[s] = rng.sparse_rand<Bitboard>();
+                magics[s] = 0ULL;
             while (popcount<Max15>((magics[s] * masks[s]) >> 56) < 6);
 
             std::memset(attacks[s], 0, size * sizeof(Bitboard));
