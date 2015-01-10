@@ -13,17 +13,9 @@ const bool HasPopCnt = true;
 
 #define CACHE_LINE_SIZE 64
 
-#ifdef IS_64BIT
 const bool Is64Bit = true;
-#else
-const bool Is64Bit = false;
-#endif
-
 typedef uint64_t Key;
 typedef uint64_t Bitboard;
-
-const int MAX_MOVES = 256;
-const int MAX_PLY   = 128;
 
 /// A move needs 16 bits to be stored
 ///
@@ -94,29 +86,6 @@ enum Bound {
   BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
 };
 
-enum Value {
-  VALUE_ZERO      = 0,
-  VALUE_DRAW      = 0,
-  VALUE_KNOWN_WIN = 10000,
-  VALUE_MATE      = 32000,
-  VALUE_INFINITE  = 32001,
-  VALUE_NONE      = 32002,
-
-  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
-  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
-
-  VALUE_ENSURE_INTEGER_SIZE_P = INT_MAX,
-  VALUE_ENSURE_INTEGER_SIZE_N = INT_MIN,
-
-  PawnValueMg   = 198,   PawnValueEg   = 258,
-  KnightValueMg = 817,   KnightValueEg = 846,
-  BishopValueMg = 836,   BishopValueEg = 857,
-  RookValueMg   = 1270,  RookValueEg   = 1278,
-  QueenValueMg  = 2521,  QueenValueEg  = 2558,
-
-  MidgameLimit  = 15581, EndgameLimit  = 3998
-};
-
 enum PieceType {
   NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
   ALL_PIECES = 0,
@@ -139,8 +108,7 @@ enum Depth {
   DEPTH_QS_NO_CHECKS  = -1,
   DEPTH_QS_RECAPTURES = -5,
 
-  DEPTH_NONE = -6,
-  DEPTH_MAX  = MAX_PLY
+  DEPTH_NONE = -6
 };
 
 enum Square {
@@ -191,17 +159,6 @@ enum Score {
 
 inline Score make_score(int mg, int eg) { return Score((mg << 16) + eg); }
 
-/// Extracting the signed lower and upper 16 bits is not so trivial because
-/// according to the standard a simple cast to short is implementation defined
-/// and so is a right shift of a signed integer.
-inline Value mg_value(Score s) {
-  return Value(((s + 0x8000) & ~0xffff) / 0x10000);
-}
-
-inline Value eg_value(Score s) {
-  return Value((int)(unsigned(s) & 0x7FFFU) - (int)(unsigned(s) & 0x8000U));
-}
-
 #define ENABLE_BASE_OPERATORS_ON(T)                             \
 inline T operator+(T d1, T d2) { return T(int(d1) + int(d2)); } \
 inline T operator-(T d1, T d2) { return T(int(d1) - int(d2)); } \
@@ -222,7 +179,6 @@ inline T operator/(T d, int i) { return T(int(d) / i); }        \
 inline int operator/(T d1, T d2) { return int(d1) / int(d2); }  \
 inline T& operator/=(T& d, int i) { return d = T(int(d) / i); }
 
-ENABLE_FULL_OPERATORS_ON(Value)
 ENABLE_FULL_OPERATORS_ON(PieceType)
 ENABLE_FULL_OPERATORS_ON(Piece)
 ENABLE_FULL_OPERATORS_ON(Color)
@@ -234,26 +190,13 @@ ENABLE_FULL_OPERATORS_ON(Rank)
 #undef ENABLE_FULL_OPERATORS_ON
 #undef ENABLE_BASE_OPERATORS_ON
 
-/// Additional operators to add integers to a Value
-inline Value operator+(Value v, int i) { return Value(int(v) + i); }
-inline Value operator-(Value v, int i) { return Value(int(v) - i); }
-inline Value& operator+=(Value& v, int i) { return v = v + i; }
-inline Value& operator-=(Value& v, int i) { return v = v - i; }
-
 /// Only declared but not defined. We don't want to multiply two scores due to
 /// a very high risk of overflow. So user should explicitly convert to integer.
 inline Score operator*(Score s1, Score s2);
 
-/// Division of a Score must be handled separately for each term
-inline Score operator/(Score s, int i) {
-  return make_score(mg_value(s) / i, eg_value(s) / i);
-}
-
-extern Value PieceValue[PHASE_NB][PIECE_NB];
-
 struct ExtMove {
   Move move;
-  Value value;
+  int value;
 };
 
 inline bool operator<(const ExtMove& f, const ExtMove& s) {
@@ -270,14 +213,6 @@ inline Square operator~(Square s) {
 
 inline CastlingRight operator|(Color c, CastlingSide s) {
   return CastlingRight(WHITE_OO << ((s == QUEEN_SIDE) + 2 * c));
-}
-
-inline Value mate_in(int ply) {
-  return VALUE_MATE - ply;
-}
-
-inline Value mated_in(int ply) {
-  return -VALUE_MATE + ply;
 }
 
 inline Square make_square(File f, Rank r) {
@@ -320,5 +255,4 @@ inline Rank relative_rank(Color c, Rank r) {
 inline Rank relative_rank(Color c, Square s) {
   return relative_rank(c, rank_of(s));
 }
-
 #endif // #ifndef TYPES_H_INCLUDED
