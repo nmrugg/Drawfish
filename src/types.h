@@ -321,42 +321,4 @@ inline Rank relative_rank(Color c, Square s) {
   return relative_rank(c, rank_of(s));
 }
 
-inline bool opposite_colors(Square s1, Square s2) {
-  int s = int(s1) ^ int(s2);
-  return ((s >> 3) ^ s) & 1;
-}
-
-inline Square pawn_push(Color c) {
-  return c == WHITE ? DELTA_N : DELTA_S;
-}
-
-inline Square from_sq(Move m) {
-  return Square((m >> 6) & 0x3F);
-}
-
-inline Square to_sq(Move m) {
-  return Square(m & 0x3F);
-}
-
-inline MoveType type_of(Move m) {
-  return MoveType(m & (3 << 14));
-}
-
-inline PieceType promotion_type(Move m) {
-  return PieceType(((m >> 12) & 3) + 2);
-}
-
-inline Move make_move(Square from, Square to) {
-  return Move(to | (from << 6));
-}
-
-template<MoveType T>
-inline Move make(Square from, Square to, PieceType pt = KNIGHT) {
-  return Move(to | (from << 6) | T | ((pt - KNIGHT) << 12));
-}
-
-inline bool is_ok(Move m) {
-  return from_sq(m) != to_sq(m); // Catch also MOVE_NULL and MOVE_NONE
-}
-
 #endif // #ifndef TYPES_H_INCLUDED
