@@ -1,8 +1,8 @@
-#include "bitboard.h"
+namespace Bitboards { void init(); }
 
-Bitboard A[8];
-Bitboard B[8];
-Bitboard C;
+int A[8];
+int B[8];
+int C;
 
 /// Bitboards::init() initializes various bitboard tables. It is called at
 /// startup and relies on global objects to be already zero-initialized.
