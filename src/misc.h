@@ -28,7 +28,6 @@
 #include "types.h"
 
 const std::string engine_info(bool to_uci = false);
-void timed_wait(WaitCondition&, Lock&, int);
 void prefetch(char* addr);
 void start_logger(bool b);
 
@@ -52,13 +51,6 @@ struct HashTable {
 private:
   std::vector<Entry> table;
 };
-
-
-enum SyncCout { IO_LOCK, IO_UNLOCK };
-std::ostream& operator<<(std::ostream&, SyncCout);
-
-#define sync_cout std::cout << IO_LOCK
-#define sync_endl std::endl << IO_UNLOCK
 
 
 /// xorshift64star Pseudo-Random Number Generator
