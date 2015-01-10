@@ -4,8 +4,6 @@ Bitboard FileBB[FILE_NB];
 Bitboard RankBB[RANK_NB];
 Bitboard AdjacentFilesBB[FILE_NB];
 Bitboard InFrontBB[COLOR_NB][RANK_NB];
-Bitboard ForwardBB[COLOR_NB][SQUARE_NB];
-Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
 Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 
 /// Bitboards::init() initializes various bitboard tables. It is called at
@@ -28,9 +26,7 @@ void Bitboards::init() {
   for (Color c = WHITE; c <= BLACK; ++c)
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-          ForwardBB[c][s]      = InFrontBB[c][rank_of(s)] & FileBB[file_of(s)];
           PawnAttackSpan[c][s] = InFrontBB[c][rank_of(s)] & AdjacentFilesBB[file_of(s)];
-          PassedPawnMask[c][s] = ForwardBB[c][s] | PawnAttackSpan[c][s];
       }
 }
 
