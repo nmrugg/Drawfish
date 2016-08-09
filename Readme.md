@@ -1,6 +1,57 @@
-### Overview
+# Drawfish
 
-[![Build Status](https://travis-ci.org/official-stockfish/Stockfish.svg?branch=master)](https://travis-ci.org/official-stockfish/Stockfish)
+### The chess engine that thinks stalemate is a win
+
+_Warning: This engine is only intended to be used by <a href="https://www.chess.com/blog/SamCopeland/stalemate-should-totes-be-a-win">National Master Sam Copeland</a>._
+
+Have you ever thought that there are too many draws in high level chess? Don't you think the current stalemate rule is illogical and arcane? Well, now you too can own your very own engine that thinks stalemate is a win! (Take that FIDE.)
+
+A <a href="https://github.com/nmrugg/Drawfish/raw/master/src/drawfish-linux-64bit">64bit binary linux verion</a> of Drawfish is included. Run `./src/drawfish-linux-64bit` to start the fun.
+
+To compile your own engine, try `make -C src build ARCH=YOUR_ARCH_HERE`. See `make -C src help` for details.
+
+Let's try it out!
+
+```bash
+> ./src/drawfish-linux-64bit
+Stockfish 090816 64 by T. Romstad, M. Costalba, J. Kiiski, G. Linscott
+position fen 4k3/4P3/8/4K3/8/8/8/8 w - - 0 1
+d
+
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   | k |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   | P |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   | K |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ |   |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+
+Fen: 4k3/4P3/8/4K3/8/8/8/8 w - - 0 1
+Key: 580E21A79EBCDFC3
+Checkers:
+go depth 6
+info depth 1 seldepth 1 multipv 1 score cp 3978 nodes 13 nps 2166 tbhits 0 time 6 pv e5d6
+info depth 2 seldepth 2 multipv 1 score mate 1 nodes 29 nps 4142 tbhits 0 time 7 pv e5e6
+info depth 3 seldepth 2 multipv 1 score mate 1 nodes 37 nps 5285 tbhits 0 time 7 pv e5e6
+info depth 4 seldepth 2 multipv 1 score mate 1 nodes 45 nps 6428 tbhits 0 time 7 pv e5e6
+info depth 5 seldepth 2 multipv 1 score mate 1 nodes 53 nps 7571 tbhits 0 time 7 pv e5e6
+info depth 6 seldepth 2 multipv 1 score mate 1 nodes 61 nps 8714 tbhits 0 time 7 pv e5e6
+bestmove e5e6
+```
+
+Ke6#, perfect!
+
+### Original ReadMe
 
 Stockfish is a free UCI chess engine derived from Glaurung 2.1. It is
 not a complete chess program and requires some UCI-compatible GUI
