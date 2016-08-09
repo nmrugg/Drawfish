@@ -129,10 +129,11 @@ namespace {
         result = WIN;
 
     // Immediate draw if it is a stalemate or a king captures undefended pawn
-    else if (   us == BLACK
-             && (  !(StepAttacksBB[KING][ksq[us]] & ~(StepAttacksBB[KING][ksq[~us]] | StepAttacksBB[PAWN][psq]))
-                 || (StepAttacksBB[KING][ksq[us]] & psq & ~StepAttacksBB[KING][ksq[~us]])))
-        result = DRAW;
+///HACK: This may or may not be a stalemate-win, so we just treat it as unknown.
+//    else if (   us == BLACK
+//             && (  !(StepAttacksBB[KING][ksq[us]] & ~(StepAttacksBB[KING][ksq[~us]] | StepAttacksBB[PAWN][psq]))
+//                 || (StepAttacksBB[KING][ksq[us]] & psq & ~StepAttacksBB[KING][ksq[~us]])))
+//        result = DRAW;
 
     // Position will be classified later
     else

@@ -1105,7 +1105,7 @@ moves_loop: // When in check search starts from here
     // return a fail low score.
     if (!moveCount)
         bestValue = excludedMove ? alpha
-                   :     inCheck ? mated_in(ss->ply) : DrawValue[pos.side_to_move()];
+                   :     mated_in(ss->ply);
 
     // Quiet best move: update killers, history and countermoves
     else if (bestMove && !pos.capture_or_promotion(bestMove))
